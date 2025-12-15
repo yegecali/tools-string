@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .app-container {
+    @apply max-w-6xl mx-auto p-0;
+  }
+
+  .content-container {
+    @apply px-4 py-5;
+  }
+
+  .grid-1 {
+    @apply grid grid-cols-1 gap-4 mt-5;
+  }
+
+  .grid-2 {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4 mt-5 auto-rows-max;
+  }
+
+  .grid-full {
+    @apply grid grid-cols-1 gap-4;
+  }
+
+  .small-text {
+    @apply text-xs text-gray-600 mt-2 mb-2;
+  }
+
+  .image-preview {
+    @apply max-w-full rounded-md mt-3 border border-gray-200 max-h-80;
+  }
+
+  .code-output {
+    @apply bg-gray-900 text-gray-100 p-3 rounded-md font-mono text-xs overflow-x-auto whitespace-pre-wrap break-all min-h-28 mt-2;
+  }
+}
+
+@media (max-width: 1000px) {
+  .grid-2 {
+    @apply grid-cols-1;
+  }
+}
+
