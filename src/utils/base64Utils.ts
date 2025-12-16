@@ -39,16 +39,19 @@ export function decodeFromBase64(base64: string): Base64Result {
 }
 
 /**
- * Convertir archivo a Base64 (data URL)
+ * Convertir archivo a Base64 (solo base64, sin prefijo)
  */
 export function fileToBase64(file: File): Promise<Base64Result> {
   return new Promise((resolve) => {
     const reader = new FileReader()
     reader.onload = () => {
+      const dataUrl = reader.result as string
+      // Extraer solo la parte de base64, sin el prefijo data:...;base64,
+      const base64 = dataUrl.split(',')[1] || dataUrl
       resolve({
         success: true,
         message: 'Archivo convertido a Base64',
-        result: reader.result as string,
+        result: base64,
       })
     }
     reader.onerror = () => {
@@ -70,17 +73,43 @@ export function downloadFromBase64(base64String: string, filename?: string): Bas
       return { success: false, message: 'Por favor ingresa Base64 o data URL' }
     }
 
-    let dataUrl = base64String.trim()
+    let base64Data = base64String.trim()
     let mimeType = 'application/octet-stream'
 
     // Extraer MIME type si es data URL
-    const dataUrlMatch = dataUrl.match(/^data:([^;]+);base64,(.*)$/)
+    const dataUrlMatch = base64Data.match(/^data:([^;]+);base64,(.*)$/)
     if (dataUrlMatch) {
       mimeType = dataUrlMatch[1]
-      dataUrl = dataUrlMatch[2]
+      base64Data = dataUrlMatch[2]
     }
 
-    const binaryString = atob(dataUrl)
+    // Si es base64 puro, intentar detectar el tipo
+    if (!dataUrlMatch) {
+      // Intentar decodificar los primeros bytes para detectar el tipo
+      try {
+        const binaryString = atob(base64Data.substring(0, 100))
+        const bytes = new Uint8Array(binaryString.length)
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i)
+        }
+
+        // Detectar por magic numbers
+        const hex = Array.from(bytes.slice(0, 4))
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('')
+          .toUpperCase()
+
+        if (hex.startsWith('89504E47')) mimeType = 'image/png'
+        else if (hex.startsWith('FFD8FF')) mimeType = 'image/jpeg'
+        else if (hex.startsWith('47494638')) mimeType = 'image/gif'
+        else if (hex.startsWith('52494646') && hex.includes('57454250')) mimeType = 'image/webp'
+        else if (hex.startsWith('25504446')) mimeType = 'application/pdf'
+      } catch (e) {
+        // Si no se puede detectar, usar default
+      }
+    }
+
+    const binaryString = atob(base64Data)
     const bytes = new Uint8Array(binaryString.length)
     for (let i = 0; i < binaryString.length; i++) {
       bytes[i] = binaryString.charCodeAt(i)

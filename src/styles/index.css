@@ -276,15 +276,15 @@
   }
 
   .code-output {
-    @apply p-3 rounded font-mono text-xs overflow-x-auto whitespace-pre-wrap break-all min-h-28 mt-2;
+    @apply p-4 rounded font-mono text-sm overflow-x-auto whitespace-pre-wrap break-all min-h-32 mt-3 border;
   }
 
   html.light .code-output {
-    @apply bg-gray-900 text-gray-100;
+    @apply bg-gray-100 text-gray-900 border-gray-300;
   }
 
   html.dark .code-output {
-    @apply bg-gray-900 text-gray-100;
+    @apply bg-gray-200 text-gray-900 border-gray-400;
   }
 
   .diff-added {
@@ -369,6 +369,63 @@
 
   html.dark .nav-link.active {
     @apply bg-white bg-opacity-30 border-b-2 border-white;
+  }
+
+  /* Estilos para Collapsible */
+  .collapsible {
+    @apply mb-4 border rounded;
+  }
+
+  html.light .collapsible {
+    @apply border-gray-300 bg-gray-50;
+  }
+
+  html.dark .collapsible {
+    @apply border-gray-700 bg-gray-900;
+  }
+
+  .collapsible-header {
+    @apply w-full px-4 py-3 flex items-center justify-between cursor-pointer font-medium transition-colors duration-200;
+    @apply no-underline border-none;
+  }
+
+  html.light .collapsible-header {
+    @apply bg-gray-100 text-gray-900 hover:bg-gray-200;
+  }
+
+  html.dark .collapsible-header {
+    @apply bg-gray-800 text-gray-100 hover:bg-gray-700;
+  }
+
+  .collapsible-title {
+    @apply font-semibold;
+  }
+
+  .collapsible-arrow {
+    @apply transition-transform duration-300 text-sm;
+    display: inline-block;
+  }
+
+  .collapsible-arrow.open {
+    @apply rotate-180;
+  }
+
+  .collapsible-content {
+    @apply p-4;
+    animation: fadeIn 0.2s ease-in;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .collapsible-section {
+    @apply w-full;
   }
 }
 

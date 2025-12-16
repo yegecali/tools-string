@@ -3,7 +3,7 @@ import { getTheme } from '../themes'
 import type { RootState } from '../store/store'
 
 export function useThemeColors() {
-  const themeName = useSelector((state: RootState) => state.theme.theme)
+  const themeName = useSelector((state: RootState) => state.theme.mode)
   const theme = getTheme(themeName as 'dark' | 'light')
 
   return {

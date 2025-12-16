@@ -6,7 +6,7 @@ import { FiMoon, FiSun } from 'react-icons/fi'
 
 export function ThemeToggle() {
   const dispatch = useDispatch()
-  const theme = useSelector((state: RootState) => state.theme.theme)
+  const theme = useSelector((state: RootState) => state.theme.mode)
   const { colors } = useThemeColors()
 
   const handleToggle = () => {
