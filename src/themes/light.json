@@ -1,0 +1,62 @@
+{
+  "name": "light",
+  "colors": {
+    "primary": {
+      "main": "#667eea",
+      "light": "#8b9ff0",
+      "dark": "#5568d3",
+      "contrast": "#ffffff"
+    },
+    "secondary": {
+      "main": "#999999",
+      "light": "#b3b3b3",
+      "dark": "#808080",
+      "contrast": "#ffffff"
+    },
+    "success": {
+      "main": "#28a745",
+      "light": "#4bb967",
+      "dark": "#1e7e34",
+      "contrast": "#ffffff"
+    },
+    "info": {
+      "main": "#17a2b8",
+      "light": "#3cb5cc",
+      "dark": "#138094",
+      "contrast": "#ffffff"
+    },
+    "warning": {
+      "main": "#ffc107",
+      "light": "#ffdb4d",
+      "dark": "#e6b100",
+      "contrast": "#000000"
+    },
+    "danger": {
+      "main": "#dc3545",
+      "light": "#e74c5c",
+      "dark": "#c82333",
+      "contrast": "#ffffff"
+    },
+    "background": {
+      "primary": "#ffffff",
+      "secondary": "#f5f5f5",
+      "tertiary": "#eeeeee"
+    },
+    "text": {
+      "primary": "#1a1a1a",
+      "secondary": "#666666",
+      "disabled": "#cccccc"
+    },
+    "border": {
+      "main": "#e0e0e0",
+      "light": "#f0f0f0",
+      "dark": "#d0d0d0"
+    },
+    "surface": {
+      "default": "#ffffff",
+      "hover": "#f9f9f9",
+      "active": "#f0f0f0"
+    }
+  }
+}
+

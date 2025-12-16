@@ -4,11 +4,11 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 type Theme = 'light' | 'dark'
 
 interface ThemeState {
-  theme: Theme
+  mode: Theme
 }
 
 const initialState: ThemeState = {
-  theme: (localStorage.getItem('theme') as Theme) || 'light',
+  mode: 'light',
 }
 
 const themeSlice = createSlice({
@@ -16,13 +16,13 @@ const themeSlice = createSlice({
   initialState,
   reducers: {
     setTheme: (state, action: PayloadAction<Theme>) => {
-      state.theme = action.payload
+      state.mode = action.payload
       localStorage.setItem('theme', action.payload)
       updateThemeInDOM(action.payload)
     },
     toggleTheme: (state) => {
-      const newTheme = state.theme === 'light' ? 'dark' : 'light'
-      state.theme = newTheme
+      const newTheme = state.mode === 'light' ? 'dark' : 'light'
+      state.mode = newTheme
       localStorage.setItem('theme', newTheme)
       updateThemeInDOM(newTheme)
     },

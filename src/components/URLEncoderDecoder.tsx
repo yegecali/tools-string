@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { encodeURL, decodeURL, encodeURLWithPlus } from '../utils'
+import { encodeURL, decodeURL } from '../utils'
 import { useForm, useCopyToClipboard } from '../hooks'
 import { InputField, ButtonGroup, OutputDisplay, StatusMessage } from './shared'
+import { FiArrowUp, FiArrowDown } from 'react-icons/fi'
 import '../styles/App.css'
 
 export default function URLEncoderDecoder() {
@@ -21,13 +22,14 @@ export default function URLEncoderDecoder() {
     },
   }
 
-  const { values, errors, handleChange, handleBlur } = useForm({ input: '' }, validationRules)
+  const { values, errors, handleChange, handleBlur, setFieldValue } = useForm({ input: '' }, validationRules)
 
   const handleEncode = () => {
     if (errors.input) return
     const result = encodeURL(values.input)
     setOutput(result.result || '')
     setMessage(result.message)
+    setFieldValue('input', '')
   }
 
   const handleDecode = () => {
@@ -35,28 +37,16 @@ export default function URLEncoderDecoder() {
     const result = decodeURL(values.input)
     setOutput(result.result || '')
     setMessage(result.message)
-  }
-
-  const handleEncodeWithPlusFn = () => {
-    if (errors.input) return
-    const result = encodeURLWithPlus(values.input)
-    setOutput(result.result || '')
-    setMessage(result.message)
+    setFieldValue('input', '')
   }
 
   const buttons = [
-    { label: 'Encode', onClick: handleEncode, disabled: !!errors.input },
+    { label: <><FiArrowUp size={16} /> Encode</>, onClick: handleEncode, disabled: !!errors.input, variant: 'primary' as const },
     {
-      label: 'Decode',
+      label: <><FiArrowDown size={16} /> Decode</>,
       onClick: handleDecode,
       disabled: !!errors.input,
-      style: { flex: 1 },
-    },
-    {
-      label: 'Encode + (espacios)',
-      onClick: handleEncodeWithPlusFn,
-      disabled: !!errors.input,
-      style: { flex: 1 },
+      variant: 'info' as const,
     },
   ]
 

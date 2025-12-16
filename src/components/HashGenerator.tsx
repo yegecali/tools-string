@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { generateHash, generateRandomSalt } from '../utils'
 import { InputField, ButtonGroup, HashResultItem } from './shared'
+import { FiX, FiRefreshCw, FiRotateCcw } from 'react-icons/fi'
 import '../styles/index.css'
 
 interface HashResultDisplay {
@@ -47,33 +48,33 @@ function HashGenerator() {
     {
       label: 'MD5',
       onClick: () => handleGenerateHash('MD5'),
-      style: { backgroundColor: '#667eea', color: 'white' },
+      variant: 'primary' as const,
     },
     {
       label: 'SHA1',
       onClick: () => handleGenerateHash('SHA1'),
-      style: { backgroundColor: '#667eea', color: 'white' },
+      variant: 'primary' as const,
     },
     {
       label: 'SHA256',
       onClick: () => handleGenerateHash('SHA256'),
-      style: { backgroundColor: '#667eea', color: 'white' },
+      variant: 'primary' as const,
     },
     {
       label: 'SHA512',
       onClick: () => handleGenerateHash('SHA512'),
-      style: { backgroundColor: '#667eea', color: 'white' },
+      variant: 'primary' as const,
     },
     {
-      label: '✕ Limpiar',
+      label: <><FiX size={16} /> Limpiar</>,
       onClick: clearAll,
-      style: { backgroundColor: '#999' },
+      variant: 'secondary' as const,
     },
   ]
 
   return (
     <div className="card">
-      <h2>🔐 Hash Generator</h2>
+      <h2><FiRefreshCw size={20} className="inline mr-2" />Hash Generator</h2>
       <p className="small-text">Genera hashes con salida en Hexadecimal y Base64</p>
 
       <InputField
@@ -100,7 +101,8 @@ function HashGenerator() {
             onClick={handleGenerateRandomSalt}
             className="btn btn-info whitespace-nowrap"
           >
-            🎲 Generar
+            <FiRotateCcw className="inline mr-2" size={16} />
+            Generar
           </button>
         </div>
       </div>

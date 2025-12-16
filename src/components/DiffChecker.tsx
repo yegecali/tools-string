@@ -1,105 +1,288 @@
 import { useState } from 'react'
-import { calculateDiff } from '../utils'
+import { diffChars, type Change } from 'diff'
 import { useForm } from '../hooks'
-import { InputField, ButtonGroup } from './shared'
+import { useThemeColors } from '../hooks/useThemeColors'
+import { ButtonGroup } from './shared'
+import { FiSearch, FiX, FiCheck } from 'react-icons/fi'
 import '../styles/index.css'
 
+// Componente para textarea con numeración de líneas
+function TextAreaWithLineNumbers({
+  label,
+  value,
+  onChange,
+  onBlur,
+  placeholder,
+  colors,
+}: {
+  label: string
+  value: string
+  onChange: (value: string) => void
+  onBlur: (e: React.FocusEvent<HTMLTextAreaElement>) => void
+  placeholder: string
+  colors: any
+}) {
+  const lines = value.split('\n')
+
+  return (
+    <div>
+      <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: colors.text.primary }}>
+        {label}
+      </label>
+      <div
+        style={{
+          display: 'flex',
+          border: `1px solid ${colors.border.main}`,
+          borderRadius: '6px',
+          overflow: 'hidden',
+          backgroundColor: colors.background.secondary,
+        }}
+      >
+        {/* Line Numbers */}
+        <div
+          style={{
+            backgroundColor: colors.background.tertiary,
+            color: colors.text.secondary,
+            padding: '12px 8px',
+            fontSize: '12px',
+            lineHeight: '1.5',
+            minWidth: '40px',
+            textAlign: 'right',
+            userSelect: 'none',
+            borderRight: `1px solid ${colors.border.main}`,
+            fontFamily: 'monospace',
+          }}
+        >
+          {lines.map((_, idx) => (
+            <div key={idx} style={{ padding: '2px 4px' }}>
+              {idx + 1}
+            </div>
+          ))}
+        </div>
+
+        {/* Textarea */}
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onBlur={onBlur}
+          placeholder={placeholder}
+          style={{
+            flex: 1,
+            padding: '12px',
+            fontFamily: 'monospace',
+            fontSize: '13px',
+            lineHeight: '1.5',
+            border: 'none',
+            outline: 'none',
+            resize: 'vertical',
+            minHeight: '200px',
+            backgroundColor: colors.background.secondary,
+            color: colors.text.primary,
+          }}
+        />
+      </div>
+    </div>
+  )
+}
+
 function DiffChecker() {
-  const [diffResult, setDiffResult] = useState<Array<{ type: string; text: string; index: number }>>([])
+  const [diffResult, setDiffResult] = useState<Change[]>([])
   const [stats, setStats] = useState<{ added: number; removed: number; equal: number; similarity: number } | null>(null)
+  const { colors } = useThemeColors()
 
   const validationRules = {
-    text1: {
-      required: false,
-    },
-    text2: {
-      required: false,
-    },
+    text1: { required: false },
+    text2: { required: false },
   }
 
-  const { values, handleChange, handleBlur } = useForm({ text1: '', text2: '' }, validationRules)
+  const { values, handleChange, handleBlur, setFieldValue } = useForm({ text1: '', text2: '' }, validationRules)
 
   const handleCompareDiff = () => {
-    const result = calculateDiff(values.text1, values.text2)
-    if (result.success && result.diff) {
-      setDiffResult(result.diff)
-      if (result.stats) {
-        setStats(result.stats)
-      }
-    }
+    const differences = diffChars(values.text1, values.text2)
+    setDiffResult(differences)
+
+    // Calcular estadísticas
+    let addedChars = 0
+    let removedChars = 0
+    let equalChars = 0
+
+    differences.forEach((change: Change) => {
+      const charCount = change.value.length
+      if (change.added) addedChars += charCount
+      else if (change.removed) removedChars += charCount
+      else equalChars += charCount
+    })
+
+    const total = addedChars + removedChars + equalChars
+    const similarity = total > 0 ? Math.round(((total - addedChars - removedChars) / total) * 100) : 100
+
+    setStats({ added: addedChars, removed: removedChars, equal: equalChars, similarity })
   }
 
   const clearDiff = () => {
     setDiffResult([])
     setStats(null)
+    setFieldValue('text1', '')
+    setFieldValue('text2', '')
   }
 
   const buttons = [
-    { label: '🔍 Comparar', onClick: handleCompareDiff, style: { backgroundColor: '#667eea', color: 'white' } },
-    { label: '✕ Limpiar', onClick: clearDiff, style: { backgroundColor: '#999' } },
+    { label: <><FiSearch size={16} /> Comparar</>, onClick: handleCompareDiff, variant: 'primary' as const },
+    { label: <><FiX size={16} /> Limpiar</>, onClick: clearDiff, variant: 'secondary' as const },
   ]
 
   return (
     <div className="card">
-      <h2>📊 Diff Checker</h2>
+      <h2>
+        <FiSearch size={20} className="inline mr-2" />
+        Diff Checker
+      </h2>
       <p className="small-text">Compara dos textos y visualiza las diferencias</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <InputField
+        <TextAreaWithLineNumbers
           label="Texto 1"
-          name="text1"
           value={values.text1}
           onChange={(val) => handleChange({ target: { name: 'text1', value: val } } as any)}
           onBlur={handleBlur}
           placeholder="Pega el primer texto aquí..."
-          type="textarea"
-          minHeight="200px"
+          colors={colors}
         />
-        <InputField
+        <TextAreaWithLineNumbers
           label="Texto 2"
-          name="text2"
           value={values.text2}
           onChange={(val) => handleChange({ target: { name: 'text2', value: val } } as any)}
           onBlur={handleBlur}
           placeholder="Pega el segundo texto aquí..."
-          type="textarea"
-          minHeight="200px"
+          colors={colors}
         />
       </div>
 
       <ButtonGroup buttons={buttons} />
 
       {stats && (
-        <div className="status-success mt-3">
-          ✅ Similitud: {stats.similarity}% | Agregado: {stats.added} | Removido: {stats.removed}
+        <div
+          style={{
+            marginTop: '16px',
+            padding: '12px 16px',
+            backgroundColor: colors.success.main + '20',
+            border: `1px solid ${colors.success.main}`,
+            borderRadius: '6px',
+            color: colors.success.main,
+            fontWeight: '600',
+          }}
+        >
+          <FiCheck className="inline mr-2" size={16} />
+          Similitud: {stats.similarity}% | Agregado: {stats.added} | Removido: {stats.removed}
         </div>
       )}
 
       {diffResult.length > 0 && (
-        <div className="mt-4">
-          <h3>Resultado de la comparación:</h3>
-          <div className="bg-gray-100 border border-gray-300 rounded p-3 max-h-96 overflow-y-auto font-mono text-xs">
-            {diffResult.map((item, idx) => (
+        <div style={{ marginTop: '24px' }}>
+          <h3 style={{ color: colors.text.primary, marginBottom: '12px' }}>Resultado de la comparación (letra por letra):</h3>
+
+          {/* 2 Columnas - Lado a Lado */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+            {/* Texto 1 con cambios destacados */}
+            <div>
+              <h4 style={{ color: colors.text.primary, fontSize: '14px', marginBottom: '8px' }}>📄 Texto 1 (Original):</h4>
               <div
-                key={idx}
-                className={`py-1 px-2 mb-0.5 whitespace-pre-wrap break-all ${
-                  item.type === 'equal'
-                    ? 'bg-transparent text-gray-900'
-                    : item.type === 'added'
-                      ? 'diff-added'
-                      : 'diff-removed'
-                }`}
+                style={{
+                  backgroundColor: colors.background.secondary,
+                  border: `1px solid ${colors.border.main}`,
+                  borderRadius: '6px',
+                  padding: '12px',
+                  minHeight: '150px',
+                  fontFamily: 'monospace',
+                  fontSize: '14px',
+                  lineHeight: '1.6',
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                }}
               >
-                <span className="font-bold mr-2">
-                  {item.type === 'equal' ? '=' : item.type === 'added' ? '+' : '-'}
-                </span>
-                {item.text || '(línea vacía)'}
+                {diffResult.map((change, idx) => {
+                  if (change.removed) {
+                    return (
+                      <span
+                        key={idx}
+                        style={{
+                          backgroundColor: '#ffcccc',
+                          color: '#d63031',
+                          fontWeight: 'bold',
+                          padding: '2px 4px',
+                          borderRadius: '2px',
+                        }}
+                      >
+                        {change.value}
+                      </span>
+                    )
+                  } else if (!change.added) {
+                    return (
+                      <span key={idx} style={{ color: colors.text.primary }}>
+                        {change.value}
+                      </span>
+                    )
+                  }
+                  return null
+                })}
               </div>
-            ))}
+            </div>
+
+            {/* Texto 2 con cambios destacados */}
+            <div>
+              <h4 style={{ color: colors.text.primary, fontSize: '14px', marginBottom: '8px' }}>📄 Texto 2 (Modificado):</h4>
+              <div
+                style={{
+                  backgroundColor: colors.background.secondary,
+                  border: `1px solid ${colors.border.main}`,
+                  borderRadius: '6px',
+                  padding: '12px',
+                  minHeight: '150px',
+                  fontFamily: 'monospace',
+                  fontSize: '14px',
+                  lineHeight: '1.6',
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                }}
+              >
+                {diffResult.map((change, idx) => {
+                  if (change.added) {
+                    return (
+                      <span
+                        key={idx}
+                        style={{
+                          backgroundColor: '#ccffcc',
+                          color: '#27ae60',
+                          fontWeight: 'bold',
+                          padding: '2px 4px',
+                          borderRadius: '2px',
+                        }}
+                      >
+                        {change.value}
+                      </span>
+                    )
+                  } else if (!change.removed) {
+                    return (
+                      <span key={idx} style={{ color: colors.text.primary }}>
+                        {change.value}
+                      </span>
+                    )
+                  }
+                  return null
+                })}
+              </div>
+            </div>
           </div>
-          <p className="small-text mt-3">
-            <strong>Leyenda:</strong> <span className="text-green-600">+ Agregado</span> |{' '}
-            <span className="text-red-600">- Removido</span> | = Igual
+
+          {/* Leyenda */}
+          <p style={{ fontSize: '12px', marginTop: '12px', color: colors.text.secondary }}>
+            <strong>Leyenda:</strong>{' '}
+            <span style={{ backgroundColor: '#ffcccc', color: '#d63031', fontWeight: 'bold', padding: '2px 6px', borderRadius: '3px', marginRight: '8px' }}>
+              ■ Removido
+            </span>
+            <span style={{ backgroundColor: '#ccffcc', color: '#27ae60', fontWeight: 'bold', padding: '2px 6px', borderRadius: '3px' }}>
+              ■ Agregado
+            </span>
           </p>
         </div>
       )}
@@ -108,4 +291,3 @@ function DiffChecker() {
 }
 
 export default DiffChecker
-

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { validateYAML, formatYAML, minifyYAML } from '../utils'
 import { useForm, useCopyToClipboard } from '../hooks'
 import { InputField, ButtonGroup } from './shared'
+import { FiCheck, FiCopy, FiZap, FiLayout } from 'react-icons/fi'
 import '../styles/index.css'
 
 function YAMLValidator() {
@@ -61,19 +62,19 @@ function YAMLValidator() {
   }
 
   const buttons = [
-    { label: '✓ Validar', onClick: handleValidateYAML, disabled: !!errors.yamlInput, style: { backgroundColor: '#667eea', color: 'white' } },
-    { label: '🎨 Formatear', onClick: handleFormatYAML, disabled: !!errors.yamlInput, style: { backgroundColor: '#17a2b8', color: 'white' } },
-    { label: '📦 Minificar', onClick: handleMinifyYAML, disabled: !!errors.yamlInput, style: { backgroundColor: '#ffc107' } },
+    { label: <>< FiCheck size={16} /> Validar</>, onClick: handleValidateYAML, disabled: !!errors.yamlInput, variant: 'primary' as const },
+    { label: <><FiLayout size={16} /> Formatear</>, onClick: handleFormatYAML, disabled: !!errors.yamlInput, variant: 'info' as const },
+    { label: <><FiZap size={16} /> Minificar</>, onClick: handleMinifyYAML, disabled: !!errors.yamlInput, variant: 'warning' as const },
     {
-      label: '📋 Copiar',
-      onClick: () => copy(values.yamlInput),
-      style: { backgroundColor: '#28a745', color: 'white' },
+      label: <><FiCopy size={16} /> Copiar</>,
+      onClick: () => { copy(values.yamlInput) },
+      variant: 'success' as const,
     },
   ]
 
   return (
     <div className="card">
-      <h2>📋 YAML Validator</h2>
+      <h2><FiLayout size={20} className="inline mr-2" />YAML Validator</h2>
       <p className="small-text">Valida, formatea y minifica archivos YAML</p>
 
       <InputField

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { yamlToProperties } from '../utils'
 import { useForm, useCopyToClipboard } from '../hooks'
 import { InputField, ButtonGroup } from './shared'
+import { FiRefreshCw, FiCopy, FiDownload, FiCheck } from 'react-icons/fi'
 import '../styles/index.css'
 
 function YAMLToProperties() {
@@ -54,28 +55,28 @@ function YAMLToProperties() {
 
   const buttons = [
     {
-      label: '🔄 Convertir',
+      label: <><FiRefreshCw size={16} /> Convertir</>,
       onClick: handleConvertYAML,
       disabled: !!errors.yamlInput,
-      style: { backgroundColor: '#667eea', color: 'white' },
+      variant: 'primary' as const,
     },
     {
-      label: '📋 Copiar',
-      onClick: () => copy(propertiesOutput),
-      style: { backgroundColor: '#28a745', color: 'white' },
+      label: <><FiCopy size={16} /> Copiar</>,
+      onClick: () => { copy(propertiesOutput) },
+      variant: 'success' as const,
       disabled: !propertiesOutput,
     },
     {
-      label: '⬇️ Descargar',
+      label: <><FiDownload size={16} /> Descargar</>,
       onClick: downloadProperties,
-      style: { backgroundColor: '#17a2b8', color: 'white' },
+      variant: 'info' as const,
       disabled: !propertiesOutput,
     },
   ]
 
   return (
     <div className="card">
-      <h2>🔄 YAML to application.properties</h2>
+      <h2><FiRefreshCw size={20} className="inline mr-2" />YAML to application.properties</h2>
       <p className="small-text">Convierte configuración YAML a formato properties</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -139,7 +140,8 @@ server:
 
       {propertiesOutput && !error && (
         <div className="status-success mt-3">
-          ✅ Conversión exitosa
+          <FiCheck className="inline mr-2" size={16} />
+          Conversión exitosa
         </div>
       )}
     </div>
