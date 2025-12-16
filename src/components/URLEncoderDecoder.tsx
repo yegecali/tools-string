@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { encodeURL, decodeURL, encodeURLWithPlus } from '../utils'
 import { useForm, useCopyToClipboard } from '../hooks'
 import { InputField, ButtonGroup, OutputDisplay, StatusMessage } from './shared'
+import { FiArrowUp, FiArrowDown, FiPlus } from 'react-icons/fi'
 import '../styles/App.css'
 
 export default function URLEncoderDecoder() {
@@ -45,18 +46,18 @@ export default function URLEncoderDecoder() {
   }
 
   const buttons = [
-    { label: 'Encode', onClick: handleEncode, disabled: !!errors.input },
+    { label: <><FiArrowUp size={16} /> Encode</>, onClick: handleEncode, disabled: !!errors.input, variant: 'primary' as const },
     {
-      label: 'Decode',
+      label: <><FiArrowDown size={16} /> Decode</>,
       onClick: handleDecode,
       disabled: !!errors.input,
-      style: { flex: 1 },
+      variant: 'info' as const,
     },
     {
-      label: 'Encode + (espacios)',
+      label: <><FiPlus size={16} /> Encode +</>,
       onClick: handleEncodeWithPlusFn,
       disabled: !!errors.input,
-      style: { flex: 1 },
+      variant: 'warning' as const,
     },
   ]
 

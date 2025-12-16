@@ -1,3 +1,4 @@
+import { useThemeColors } from '../../hooks/useThemeColors'
 
 interface InputFieldProps {
   label: string
@@ -22,13 +23,25 @@ export function InputField({
   error,
   name,
 }: InputFieldProps) {
-  const inputClasses = `input-field ${error ? 'input-error' : ''}`
+  const { colors } = useThemeColors()
+
+  const inputStyle = {
+    backgroundColor: colors.surface.default,
+    color: colors.text.primary,
+    borderColor: error ? colors.danger.main : colors.border.main,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+  }
+
+  const labelStyle = {
+    color: error ? colors.danger.main : colors.text.primary,
+  }
 
   return (
     <div className="mb-4">
-      <label className={`label ${error ? 'label-error' : ''}`}>
+      <label style={labelStyle} className="label font-medium">
         {label}
-        {error && <span className="text-red-500 ml-2">*</span>}
+        {error && <span style={{ color: colors.danger.main }} className="ml-2">*</span>}
       </label>
       {type === 'textarea' ? (
         <textarea
@@ -37,8 +50,8 @@ export function InputField({
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
           placeholder={placeholder}
-          className={inputClasses}
-          style={{ minHeight }}
+          style={{ ...inputStyle, minHeight }}
+          className="w-full p-2 rounded font-mono text-sm outline-none transition-colors"
         />
       ) : (
         <input
@@ -48,10 +61,15 @@ export function InputField({
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
           placeholder={placeholder}
-          className={inputClasses}
+          style={inputStyle}
+          className="w-full p-2 rounded font-mono text-sm outline-none transition-colors"
         />
       )}
-      {error && <small className="error-text">{error}</small>}
+      {error && (
+        <small style={{ color: colors.danger.main }} className="error-text block mt-1">
+          {error}
+        </small>
+      )}
     </div>
   )
 }

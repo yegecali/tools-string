@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { validateJSON, formatJSON, minifyJSON } from '../utils'
 import { useForm, useCopyToClipboard } from '../hooks'
 import { InputField, ButtonGroup, StatusMessage } from './shared'
+import { FiCheck, FiCopy, FiZap, FiLayout } from 'react-icons/fi'
 import '../styles/App.css'
 
 export default function JSONTools() {
@@ -64,10 +65,10 @@ export default function JSONTools() {
   }
 
   const buttons = [
-    { label: 'Validar', onClick: handleValidate },
-    { label: 'Formatear (pretty)', onClick: handleFormat, disabled: !!errors.input, style: { flex: 1 } },
-    { label: 'Minificar', onClick: handleMinify, disabled: !!errors.input, style: { flex: 1 } },
-    { label: 'Copiar', onClick: handleCopy, style: { flex: 1 }, disabled: !output },
+    { label: <><FiCheck size={16} /> Validar</>, onClick: handleValidate, variant: 'primary' as const },
+    { label: <><FiLayout size={16} /> Formatear</>, onClick: handleFormat, disabled: !!errors.input, variant: 'info' as const },
+    { label: <><FiZap size={16} /> Minificar</>, onClick: handleMinify, disabled: !!errors.input, variant: 'warning' as const },
+    { label: <><FiCopy size={16} /> Copiar</>, onClick: handleCopy, variant: 'success' as const, disabled: !output },
   ]
 
   return (

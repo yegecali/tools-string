@@ -1,9 +1,10 @@
-import type { CSSProperties } from 'react'
+import type { ReactNode } from 'react'
+import { useThemeColors } from '../../hooks/useThemeColors'
 
 interface Button {
-  label: string
-  onClick: () => void
-  style?: CSSProperties
+  label: ReactNode
+  onClick: () => void | Promise<void>
+  variant?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
   disabled?: boolean
 }
 
@@ -12,30 +13,42 @@ interface ButtonGroupProps {
 }
 
 export function ButtonGroup({ buttons }: ButtonGroupProps) {
-  const getButtonClasses = (style?: CSSProperties): string => {
-    let classes = 'btn flex-1 min-w-24'
+  const { colors } = useThemeColors()
 
-    if (style?.backgroundColor === '#999') classes += ' btn-secondary'
-    else if (style?.backgroundColor === '#28a745') classes += ' btn-success'
-    else if (style?.backgroundColor === '#17a2b8') classes += ' btn-info'
-    else if (style?.backgroundColor === '#ffc107') classes += ' bg-yellow-500 hover:bg-yellow-600'
-    else if (style?.backgroundColor === '#667eea') classes += ' bg-blue-600 hover:bg-blue-700'
+  const getButtonStyle = (variant: string = 'primary') => {
+    const variantColors: Record<string, { bg: string; contrast: string }> = {
+      primary: { bg: colors.primary.main, contrast: colors.primary.contrast },
+      secondary: { bg: colors.secondary.main, contrast: colors.secondary.contrast },
+      success: { bg: colors.success.main, contrast: colors.success.contrast },
+      info: { bg: colors.info.main, contrast: colors.info.contrast },
+      warning: { bg: colors.warning.main, contrast: colors.warning.contrast },
+      danger: { bg: colors.danger.main, contrast: colors.danger.contrast },
+    }
 
-    return classes
+    return variantColors[variant] || variantColors.primary
   }
 
   return (
     <div className="flex gap-2 flex-wrap mt-3 mb-3">
-      {buttons.map((btn, idx) => (
-        <button
-          key={idx}
-          onClick={btn.onClick}
-          className={getButtonClasses(btn.style)}
-          disabled={btn.disabled}
-        >
-          {btn.label}
-        </button>
-      ))}
+      {buttons.map((btn, idx) => {
+        const style = getButtonStyle(btn.variant)
+        return (
+          <button
+            key={idx}
+            onClick={btn.onClick}
+            style={{
+              backgroundColor: btn.disabled ? colors.text.disabled : style.bg,
+              color: style.contrast,
+              cursor: btn.disabled ? 'not-allowed' : 'pointer',
+              opacity: btn.disabled ? 0.6 : 1,
+            }}
+            className="flex-1 min-w-24 px-4 py-2 rounded font-medium hover:opacity-90 transition-opacity disabled:hover:opacity-60"
+            disabled={btn.disabled}
+          >
+            {btn.label}
+          </button>
+        )
+      })}
     </div>
   )
 }

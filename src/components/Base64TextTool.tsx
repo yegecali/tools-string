@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { encodeToBase64, decodeFromBase64 } from '../utils'
 import { useForm, useCopyToClipboard } from '../hooks'
 import { InputField, ButtonGroup, OutputDisplay, StatusMessage } from './shared'
+import { FiArrowDown, FiArrowUp, FiCopy } from 'react-icons/fi'
 import '../styles/App.css'
 
 export default function Base64TextTool() {
@@ -48,9 +49,9 @@ export default function Base64TextTool() {
   }
 
   const buttons = [
-    { label: 'Codificar Base64', onClick: handleEncode, disabled: !!errors.input },
-    { label: 'Decodificar Base64', onClick: handleDecode, disabled: !!errors.input, style: { flex: 1 } },
-    { label: 'Copiar salida', onClick: handleCopy, style: { flex: 1 }, disabled: !output },
+    { label: <><FiArrowDown size={16} /> Codificar</>, onClick: handleEncode, disabled: !!errors.input, variant: 'primary' as const },
+    { label: <><FiArrowUp size={16} /> Decodificar</>, onClick: handleDecode, disabled: !!errors.input, variant: 'info' as const },
+    { label: <><FiCopy size={16} /> Copiar</>, onClick: handleCopy, variant: 'success' as const, disabled: !output },
   ]
 
   return (

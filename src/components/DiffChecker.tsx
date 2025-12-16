@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { calculateDiff } from '../utils'
 import { useForm } from '../hooks'
 import { InputField, ButtonGroup } from './shared'
+import { FiSearch, FiX, FiCheck, FiPlus, FiMinus } from 'react-icons/fi'
 import '../styles/index.css'
 
 function DiffChecker() {
@@ -35,13 +36,13 @@ function DiffChecker() {
   }
 
   const buttons = [
-    { label: '🔍 Comparar', onClick: handleCompareDiff, style: { backgroundColor: '#667eea', color: 'white' } },
-    { label: '✕ Limpiar', onClick: clearDiff, style: { backgroundColor: '#999' } },
+    { label: <><FiSearch size={16} /> Comparar</>, onClick: handleCompareDiff, variant: 'primary' as const },
+    { label: <><FiX size={16} /> Limpiar</>, onClick: clearDiff, variant: 'secondary' as const },
   ]
 
   return (
     <div className="card">
-      <h2>📊 Diff Checker</h2>
+      <h2><FiSearch size={20} className="inline mr-2" />Diff Checker</h2>
       <p className="small-text">Compara dos textos y visualiza las diferencias</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -71,7 +72,8 @@ function DiffChecker() {
 
       {stats && (
         <div className="status-success mt-3">
-          ✅ Similitud: {stats.similarity}% | Agregado: {stats.added} | Removido: {stats.removed}
+          <FiCheck className="inline mr-2" size={16} />
+          Similitud: {stats.similarity}% | Agregado: {stats.added} | Removido: {stats.removed}
         </div>
       )}
 
@@ -91,15 +93,15 @@ function DiffChecker() {
                 }`}
               >
                 <span className="font-bold mr-2">
-                  {item.type === 'equal' ? '=' : item.type === 'added' ? '+' : '-'}
+                  {item.type === 'equal' ? '=' : item.type === 'added' ? <FiPlus size={14} className="inline" /> : <FiMinus size={14} className="inline" />}
                 </span>
                 {item.text || '(línea vacía)'}
               </div>
             ))}
           </div>
           <p className="small-text mt-3">
-            <strong>Leyenda:</strong> <span className="text-green-600">+ Agregado</span> |{' '}
-            <span className="text-red-600">- Removido</span> | = Igual
+            <strong>Leyenda:</strong> <span className="text-green-600"><FiPlus className="inline mr-1" size={14} />Agregado</span> |{' '}
+            <span className="text-red-600"><FiMinus className="inline mr-1" size={14} />Removido</span> | = Igual
           </p>
         </div>
       )}
